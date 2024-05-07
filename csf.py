@@ -1,13 +1,16 @@
+import argparse
 import shutil
 from pathlib import Path
+import sys
 
 
-def traverse(root: str, dest: str, ext: str):
+def traverse(src: Path, dst: Path, ext: Path):
     try:
-        src_path = Path(root).resolve(True)
-        dst_path = Path(dest).resolve(True)
+        src_path = src.resolve(True)
+        dst_path = dst.resolve(True)
     except OSError as err:
         print(err)
+        sys.exit(1)
 
     def dfs(current_path: Path):
         if current_path not in visited:
@@ -31,4 +34,17 @@ def traverse(root: str, dest: str, ext: str):
     dfs(src_path)
 
 
-traverse("/home/abdulrahman/repos/", "/home/abdulrahman/test", "png")
+def main():
+    parser = argparse.ArgumentParser(
+        description="Traverse directory and copy files with specific extension."
+    )
+    parser.add_argument("src", type=Path, help="Source directory path")
+    parser.add_argument("dst", type=Path, help="Destination directory path")
+    parser.add_argument("ext", type=str, help="Extension of files to copy")
+    args = parser.parse_args()
+
+    traverse(args.src, args.dst, args.ext)
+
+
+if __name__ == "__main__":
+    main()
